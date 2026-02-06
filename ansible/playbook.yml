@@ -1,0 +1,22 @@
+- hosts: webservers
+  become: yes
+  tasks:
+    - name: Install Apache2, Git, MySQL client
+      apt:
+        name: [apache2, git, mysql-client]
+        state: present
+        update_cache: yes
+
+    - name: Deploy static site from Jenkins workspace
+      copy:
+        src: "{{ web_src }}/"
+        dest: /var/www/html/
+        owner: www-data
+        group: www-data
+        mode: '0644'
+
+    - name: Ensure Apache is running
+      service:
+        name: apache2
+        state: started
+        enabled: yes
